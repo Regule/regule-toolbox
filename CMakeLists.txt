@@ -25,12 +25,34 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_library(regule_toolbox_lib src/simple_lidar.cpp)
+ament_target_dependencies(regule_toolbox_lib rclcpp sensor_msgs)
+
+target_include_directories(regule_toolbox_lib PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 add_executable(fake_lidar_node src/fake_lidar_node.cpp)
 ament_target_dependencies(fake_lidar_node rclcpp sensor_msgs tf2_ros)
+
+install(
+  TARGETS regule_toolbox_lib
+  EXPORT regule_toolbox_lib
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 install(TARGETS
   fake_lidar_node
    DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install headers
+install(
+  DIRECTORY include/
+  DESTINATION include/
 )
 
 install(DIRECTORY launch
